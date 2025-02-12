@@ -237,8 +237,8 @@ mcod_2019 <- read.csv("nvss_Mcod_2019.csv")
 bipartite_edgelist <- mcod_2019 %>%
   select(death_id, cause_Condition_1RA:cause_Condition_20RA) %>%
   pivot_longer(cols = starts_with("cause_"), names_to = "condition", values_to = "cause") %>%
-  filter(!is.na(cause) & cause != "unknown") %>%  # Remove missing and "unknown" causes
-  select(death_id, cause)  # Keep only death_id and cause pairs
+  filter(!is.na(cause) & cause != "unknown") %>%  
+  select(death_id, cause) 
 
 # create a Bipartite Graph (Individuals <-> Causes)
 g_bipartite <- graph_from_data_frame(bipartite_edgelist, directed = FALSE)
@@ -246,7 +246,7 @@ V(g_bipartite)$type <- bipartite_mapping(g_bipartite)$type  # Assign node types
 
 # Project to a Cause-by-Cause network
 bipartite_matrix <- as_biadjacency_matrix(g_bipartite)
-cause_overlap_matrix <- tcrossprod(t(bipartite_matrix))  # Cause-by-cause projection
+cause_overlap_matrix <- tcrossprod(t(bipartite_matrix))  
 diag(cause_overlap_matrix) <- 0  # Remove self-loops
 
 # Create cause Network Graph
@@ -254,7 +254,7 @@ cause_network <- graph_from_adjacency_matrix(cause_overlap_matrix, mode = "undir
 
 # extract cause Network edgelist
 cause_edge_list <- as_data_frame(cause_network, what = "edges") %>%
-  rename(from = from, to = to, weight = weight)  # Renaming columns
+  rename(from = from, to = to, weight = weight)  
 
 # Visualize the Network
 plot(cause_network)
@@ -286,7 +286,7 @@ plot(clusters, cause_network)
 
 # Assign cluster labels to each cause
 cluster_mapping <- data.frame(
-  cause = V(cause_network)$name,  # Cause names from network
+  cause = V(cause_network)$name,  
   cluster = clusters$membership   # Cluster assignment
 )
 
@@ -294,8 +294,8 @@ cluster_mapping <- data.frame(
 df_clustered <- df_selected %>%
   pivot_longer(cols = starts_with("cause_"), names_to = "condition", values_to = "cause") %>%
   left_join(cluster_mapping, by = "cause") %>%
-  filter(!is.na(cluster)) %>%  # Remove unmatched causes
-  select(death_id, state, fips, cluster)  # Keep relevant columns
+  filter(!is.na(cluster)) %>%  
+  select(death_id, state, fips, cluster) 
 
 # Count deaths per cluster in each state
 state_cluster_summary <- df_clustered %>%
