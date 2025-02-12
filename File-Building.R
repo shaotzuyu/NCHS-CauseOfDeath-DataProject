@@ -1,21 +1,27 @@
 ######################################################
-# Project: MCoD in Dynamic Networks
-# Start date: 10 Feb, 2025
-# Update date: 10 Feb, 2025
+# Project: Multiple-CoD in Dynamic Networks
+# Start date: 5 Feb, 2025
+# Update date: 11 Feb, 2025
 #######################################################
 
+library(igraph)
+library(dplyr)
+library(tidyr)
+library(ggraph)
+library(tidygraph)
+library(ggplot2)
+library(maps)
 
 # ---------------------------------------------------------------------------------------- #
 # Read in/clean CoD data
 # ---------------------------------------------------------------------------------------- #
 
-setwd("/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/MULT2019.USPSAllCnty")
-library(tidyverse)
-library(dplyr)
+# Load county-level causes of death
+setwd("")
 
-# Read in Data
-start <- Sys.time() #Leave blank
-df <- read_fwf("/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/MULT2019.USPSAllCnty/MULT2019US.AllCnty.txt", #Add file path in parenthesis
+# Read in NVSS Data
+start <- Sys.time() 
+df <- read_fwf("", #Add file path in parenthesis
                fwf_positions(c(21, 35, 28, 69, 79, 63, 106, 489, 484, 146, 806, 810, 812, 816, 20, 64, 65, 70, 74, 75, 77, 81, 83, 84, 85, 102, 107, 108, 
                                109, 144, 145, 150, 154, 157, 160, 341, 344, 349, 354, 359, 364, 369, 374, 379, 384, 389, 394, 399, 404, 409,
                                414, 419, 424, 429, 434, 439, 448), 
@@ -33,7 +39,7 @@ df <- read_fwf("/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/
                                'Condition_20RA', 'Race_Imputation_Flag')),
                col_types = cols(.default = col_character())) 
 
-# Refine ICD-10 mappings to include missing categories
+# Refine ICD-10 mappings
 df <- df %>%
   mutate(
     cause_level2_icd10 = case_when(
@@ -114,7 +120,7 @@ df <- df %>%
   )
 
 
-# a function to categorise ICD-10 code
+# a function to categorise/collapse-down ICD-10 code
 categorize_icd10 <- function(icd_code) {
   case_when(
     grepl("^I", icd_code) ~ "cardio",
@@ -143,7 +149,7 @@ categorize_icd10 <- function(icd_code) {
     icd_code %in% c("U014", "U070") ~ "unknown"  )
 }
 
-# apply the function to all 20 condition variables
+# apply the function to all 20 causes of death (conditions) columns
 df <- df %>%
   mutate(across(starts_with("Condition_"), ~ categorize_icd10(.), .names = "cause_{.col}"))
 
@@ -161,7 +167,7 @@ df_selected <- df %>%
 head(df_selected)
 
 
-# Create a lookup table for state abbreviations to FIPS codes
+# Create a lookup table for state abbreviations to FIPS codes (for graph)
 state_fips <- tibble(
   state = c("AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", 
             "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", 
@@ -197,7 +203,7 @@ df_selected <- df_selected %>%
   select(state, fips, death_id, everything())
 
 # Save
-setwd("/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Projects/Multiple-CoD-Networks/Source")
+setwd("")
 write.csv(df_selected, "nvss_Mcod_2019.csv", row.names = FALSE)
 
 
@@ -205,25 +211,17 @@ write.csv(df_selected, "nvss_Mcod_2019.csv", row.names = FALSE)
 # Constructing a network object
 # ---------------------------------------------------------------------------------------- #
 
-library(igraph)
-library(dplyr)
-library(tidyr)
-library(ggraph)
-library(tidygraph)
-library(ggplot2)
-library(maps)
-
 setwd("/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Projects/Multiple-CoD-Networks/Source")
 mcod_2019 <- read.csv("nvss_Mcod_2019.csv")
 
-# Reshape Data to Long Format (Individual-Cause Pairs) and Remove "unknown"
+# reshape Data to Long Format (Individual-Cause Pairs) and Remove "unknown"
 bipartite_edgelist <- mcod_2019 %>%
   select(death_id, cause_Condition_1RA:cause_Condition_20RA) %>%
   pivot_longer(cols = starts_with("cause_"), names_to = "condition", values_to = "cause") %>%
   filter(!is.na(cause) & cause != "unknown") %>%  # Remove missing and "unknown" causes
   select(death_id, cause)  # Keep only death_id and cause pairs
 
-# Create a Bipartite Graph (Individuals <-> Causes)
+# create a Bipartite Graph (Individuals <-> Causes)
 g_bipartite <- graph_from_data_frame(bipartite_edgelist, directed = FALSE)
 V(g_bipartite)$type <- bipartite_mapping(g_bipartite)$type  # Assign node types
 
