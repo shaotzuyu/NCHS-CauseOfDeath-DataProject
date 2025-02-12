@@ -13,6 +13,25 @@ library(ggplot2)
 library(maps)
 
 # ---------------------------------------------------------------------------------------- #
+# Steps & logics
+# ---------------------------------------------------------------------------------------- #
+
+# Testing whether a network approach could help map "syndemic mortality"
+# i.e., what are the common network topologies of multiple causes of death?
+
+# 1 cleaning the raw NVSS 2019 file and collapse down difference causes for intepretation
+
+# 2 construct a bipartite network (individuals <-> causes)
+# 3 project and collapse bipartite graph into a cause-by-cause network 
+#      edge weights reflect how often two causes appear together in death record
+
+# 4 compute descriptive network stats: k, betweenness, closeness, and clustering
+# 5 detect clusters of related causes using louvain community detection
+
+# 7 plot the cause network with weighted edges
+# 8 examine spatial patterns in cause clusters
+
+# ---------------------------------------------------------------------------------------- #
 # Read in/clean CoD data
 # ---------------------------------------------------------------------------------------- #
 
@@ -242,7 +261,7 @@ plot(cause_network)
 
 
 # ---------------------------------------------------------------------------------------- #
-# Correlation in network and geographic spaces
+# Correlation in network and geographic spaces - working
 # ---------------------------------------------------------------------------------------- #
 
 # Convert to tidygraph object
