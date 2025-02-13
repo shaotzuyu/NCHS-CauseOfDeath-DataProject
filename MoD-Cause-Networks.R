@@ -230,7 +230,7 @@ write.csv(df_selected, "nvss_Mcod_2019.csv", row.names = FALSE)
 # Constructing a network object
 # ---------------------------------------------------------------------------------------- #
 
-setwd("/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Projects/Multiple-CoD-Networks/Source")
+setwd("")
 mcod_2019 <- read.csv("nvss_Mcod_2019.csv")
 
 # reshape Data to Long Format (Individual-Cause Pairs) and Remove "unknown"
