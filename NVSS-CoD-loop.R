@@ -59,7 +59,7 @@ library(readr)
 # ------------------------------------------------------------------------ #
 
 # Set base directory
-base_dir <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
+base_dir <- ""
 
 # Loop over years 2003 to 2022
 for (year in 2000:2002) {
@@ -142,7 +142,7 @@ cat("Saved:", paste0(base_dir, "nvss_cod_", year, ".csv"), "\n")
 # Regroup age categories to correspond with ACS age groups
 # ------------------------------------------------------------------------ #
 
-base_direct <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
+base_direct <- ""
 
 # Loop through years 2000-2002
 for (year in 2000:2002) {
@@ -215,7 +215,7 @@ for (year in 2000:2002) {
 # ------------------------------------------------------------------------ #
 
 # Set base directory
-base_dir <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
+base_dir <- ""
 
 # Loop over years 2003 to 2022
 for (year in 2003:2022) {
@@ -318,7 +318,7 @@ for (year in 2003:2022) {
 # ------------------------------------------------------------------------ #
 
 # Set base directory
-base_direct <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
+base_direct <- ""
 
 # Loop through years 2003-2022
 for (year in 2003:2022) {
@@ -442,7 +442,7 @@ for (year in 2000:2022) {
 # ------------------------------------------------------------------------ #
 
 # Set base directory
-base_direct <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
+base_direct <- ""
 
 # Create an empty dataframe to store results
 death_comparison <- tibble(year = integer(), 
@@ -507,7 +507,7 @@ print(death_comparison)
 # Combine all files into panel structure with year column
 # ------------------------------------------------------------------------ #
 
-base_direct <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
+base_direct <- ""
 file_types <- c("nvss_cod_collapsed", "nvss_cod_gp", "nvss_cod")
 
 # Function to merge files by type with year column
@@ -582,7 +582,7 @@ for (year in 2000:2022) {
 # Combine yearly files to single panel structure
 # ------------------------------------------------------------------------ #
 
-base_direct <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
+base_direct <- ""
 
 # define file types to merge
 file_types <- c("nvss_cod_collapsed", "nvss_cod_gp", "nvss_cod")
