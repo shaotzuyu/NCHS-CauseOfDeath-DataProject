@@ -1,7 +1,7 @@
 #######################################################
 # Project: Building COD data
 # Start date: 10 Feb, 2025
-# Update date: 10 Feb, 2025
+# Update date: 13 Feb, 2025
 #######################################################
 
 library(tidyverse)
@@ -59,9 +59,9 @@ library(readr)
 # ------------------------------------------------------------------------ #
 
 # Set base directory
-base_dir <- ""
+base_dir <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
 
-# Loop over years 2003 to 2022
+# Loop over years 2000-2002
 for (year in 2000:2002) {
   
   # Construct file path for the current year
@@ -71,10 +71,10 @@ for (year in 2000:2002) {
   # Read in Data
   df <- read_fwf(file_path,
                  fwf_positions(
-                      start = c(21, 23, 67, 69, 142, 338,  
+                      start = c(21, 33, 67, 69, 142, 338,  
                                 341, 346, 351, 356, 361, 366, 371, 376, 381, 386, 
                                 391, 396, 401, 406, 411, 416, 421, 426, 431, 436),  # Updated Start positions
-                      end   = c(22, 25, 68, 70, 145, 339,  
+                      end   = c(22, 35, 68, 70, 145, 339,  
                                 345, 350, 355, 360, 365, 370, 375, 380, 385, 390, 
                                 395, 400, 405, 410, 415, 420, 425, 430, 435, 440),  # Updated End positions
                       col_names = c('state', 'fips', 'Age_Recode_52', 'Age_Recode_27', 
@@ -142,7 +142,7 @@ cat("Saved:", paste0(base_dir, "nvss_cod_", year, ".csv"), "\n")
 # Regroup age categories to correspond with ACS age groups
 # ------------------------------------------------------------------------ #
 
-base_direct <- ""
+base_direct <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
 
 # Loop through years 2000-2002
 for (year in 2000:2002) {
@@ -215,7 +215,7 @@ for (year in 2000:2002) {
 # ------------------------------------------------------------------------ #
 
 # Set base directory
-base_dir <- ""
+base_dir <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
 
 # Loop over years 2003 to 2022
 for (year in 2003:2022) {
@@ -227,10 +227,10 @@ for (year in 2003:2022) {
   # Read in Data
   df <- read_fwf(file_path,
                  fwf_positions(
-                   c(21, 35, 28, 69, 79, 63, 106, 489, 484, 146, 806, 810, 812, 816, 20, 64, 65, 70, 74, 75, 77, 81, 83, 84, 85, 102, 107, 108, 
+                   c(29, 35, 28, 69, 79, 63, 106, 489, 484, 146, 806, 810, 812, 816, 20, 64, 65, 70, 74, 75, 77, 81, 83, 84, 85, 102, 107, 108, 
                      109, 144, 145, 150, 154, 157, 160, 341, 344, 349, 354, 359, 364, 369, 374, 379, 384, 389, 394, 399, 404, 409,
                      414, 419, 424, 429, 434, 439, 448), 
-                   c(22, 37, 28, 69, 80, 64, 106, 490, 486, 149, 809, 811, 815, 817, 20, 64, 66, 73, 74, 76, 78, 82, 83, 84, 85, 105, 107, 108, 
+                   c(30, 37, 28, 69, 80, 64, 106, 490, 486, 149, 809, 811, 815, 817, 20, 64, 66, 73, 74, 76, 78, 82, 83, 84, 85, 105, 107, 108, 
                      109, 144, 145, 152, 156, 159, 161, 342, 348, 353, 358, 363, 368, 373, 378, 383, 388, 393, 398, 403, 408, 413,
                      418, 423, 428, 433, 438, 443, 448),
                    c('state','fips','Pop_size_cat', 'Sex','Age_Recode_12','Education_2003','Injury_at_Work', 'RaceRecode_40', 'Hispanic_Origin',
@@ -318,7 +318,7 @@ for (year in 2003:2022) {
 # ------------------------------------------------------------------------ #
 
 # Set base directory
-base_direct <- ""
+base_direct <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
 
 # Loop through years 2003-2022
 for (year in 2003:2022) {
@@ -384,7 +384,7 @@ for (year in 2003:2022) {
 # Load Yearly Data & Assign Broader Cause Groups
 # ------------------------------------------------------------------------ #
 
-for (year in 2000:2022) {
+for (year in 2000:2002) {
   
   # Load the yearly ICD-10 grouped file
   file_path <- paste0(base_direct, "nvss_cod_collapsed_", year, ".csv")
@@ -442,7 +442,7 @@ for (year in 2000:2022) {
 # ------------------------------------------------------------------------ #
 
 # Set base directory
-base_direct <- ""
+base_direct <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
 
 # Create an empty dataframe to store results
 death_comparison <- tibble(year = integer(), 
@@ -507,7 +507,7 @@ print(death_comparison)
 # Combine all files into panel structure with year column
 # ------------------------------------------------------------------------ #
 
-base_direct <- ""
+base_direct <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
 file_types <- c("nvss_cod_collapsed", "nvss_cod_gp", "nvss_cod")
 
 # Function to merge files by type with year column
@@ -579,37 +579,101 @@ for (year in 2000:2022) {
 }
 
 # ------------------------------------------------------------------------ #
-# Combine yearly files to single panel structure
+# Clean the unbalanced fips code 
+# Merge with a list of existing fips code file and drop the unmatched.
+# From 2003-2022 -- note that fips in 2000-02 do not align with other files
 # ------------------------------------------------------------------------ #
 
-base_direct <- ""
+library(dplyr)
+library(tidyr)
+library(readr)
+library(stringr)
 
-# define file types to merge
+# Set base directory
+base_direct <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
+
+# Define file types to process
 file_types <- c("nvss_cod_collapsed", "nvss_cod_gp", "nvss_cod")
 
-# function to merge all yearly files for a given type
-merge_yearly_files <- function(file_prefix) {
+# Load FIPS reference file
+fips_ref <- read.delim(paste0(base_direct, "fips2county.tsv"), sep = "\t", colClasses = "character")
+
+# Ensure CountyFIPS codes are properly formatted as 5-digit numbers
+fips_ref <- fips_ref %>%
+  mutate(CountyFIPS = str_pad(CountyFIPS, width = 5, side = "left", pad = "0"))
+
+# Loop through each year from 2003 to 2022
+for (year in 2000:2022) {
+  for (file_prefix in file_types) {
+    
+    # Define input and output file names
+    input_file <- paste0(base_direct, file_prefix, "_", year, "_sum.csv")
+    output_file <- paste0(base_direct, file_prefix, "_", year, "_sum_FipsAdj.csv")
+    
+    # Check if the file exists before proceeding
+    if (file.exists(input_file)) {
+      cat("Processing:", input_file, "\n")
+      
+      # Read the data
+      df <- read.csv(input_file, colClasses = "character") %>%
+        mutate(fips = str_pad(fips, width = 5, side = "left", pad = "0"))  # Ensure 5-digit FIPS format
+      
+      # Merge with FIPS reference and drop unmatched rows
+      df_cleaned <- df %>%
+        inner_join(fips_ref, by = c("fips" = "CountyFIPS")) %>%  # Keep only matched rows
+        select(-StateFIPS, -CountyFIPS_3, -StateName, -StateAbbr, -STATE_COUNTY, -CountyCBSA)  # Drop extra columns
+      
+      # Save the cleaned file
+      write.csv(df_cleaned, output_file, row.names = FALSE)
+      cat("Saved:", output_file, "\n")
+      
+    } 
+  }
+}
+
+# ------------------------------------------------------------------------ #
+# Append all cleaned files into single datasets
+# ------------------------------------------------------------------------ #
+
+# Function to append all yearly files into one dataset
+append_files_by_type <- function(file_prefix) {
   
-  # find all *_sum.csv files for this type
-  file_list <- list.files(path = base_direct, pattern = paste0("^", file_prefix, "_\\d{4}_sum\\.csv$"), full.names = TRUE)
+  # Identify all cleaned files that match the pattern
+  file_list <- list.files(path = base_direct, pattern = paste0("^", file_prefix, "_\\d{4}_sum_FipsAdj\\.csv$"), full.names = TRUE)
   
-  # if there are no matching files, skip
+  # If no files exist, skip
   if (length(file_list) == 0) {
     cat("No files found for:", file_prefix, "\n")
     return(NULL)
   }
   
-  # read and append all files
+  # Read and combine all matching files
   merged_data <- file_list %>%
-    map_dfr(~ read_csv(.x, col_types = cols(.default = col_character())))  # ensure character to avoid conflicts
+    map_dfr(~ read_csv(.x, col_types = cols(.default = col_character())))  # Ensure character columns
   
-  # save the merged file
-  merged_file_path <- paste0(base_direct, file_prefix, "_all.csv")
+  # Save the final merged file
+  merged_file_path <- paste0(base_direct, file_prefix, "_all_sum_FipsAdj.csv")
   write_csv(merged_data, merged_file_path)
   
   cat("Merged and saved:", merged_file_path, "\n")
 }
 
-# loop over all file types
-walk(file_types, merge_yearly_files)
+# Run merging for each file type
+walk(file_types, append_files_by_type)
+
+# Double check whether fips n looks correct
+
+base_direct <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
+
+# Load the appended file
+file_path <- paste0(base_direct, "nvss_cod_collapsed_all_sum_FipsAdj.csv")
+
+# Read the data
+df <- read_csv(file_path, col_types = cols(.default = col_character()))
+
+# Count unique FIPS codes
+num_unique_fips <- df %>%
+  distinct(fips) %>%
+  nrow()
+cat("Total unique FIPS codes in", file_path, ":", num_unique_fips, "\n")
 
