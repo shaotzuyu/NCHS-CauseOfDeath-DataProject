@@ -16,6 +16,6 @@ File Descriptions
   - Purpose: A working project using a network approach to analyze multiple underlying causes of death across counties.
   - Function: Constructs county-level networks based on shared cause-of-death patterns.
 
-4. NVSS-CoD-Mismatch.R
+4. PAFM_Building.R
   - Purpose: A working project looking at mismatches between the place of death and residence in U.S. mortality data (2003–2022).
   - Function: Constructs individual-level records identifying county- and state-level mismatches, and classifies causes of death.
