@@ -1,7 +1,7 @@
 #######################################################
 # Project: Building COD data
 # Start date: 10 Feb, 2025
-# Update date: 13 Feb, 2025
+# Update date: 14 Feb, 2025
 #######################################################
 
 library(tidyverse)
@@ -35,7 +35,7 @@ library(readr)
 # 4 death_comparison.csv
 #   - Summary of total deaths in raw vs. processed datasets (2000-2022).
 #   - Helps validate that no deaths were lost during processing.
-  
+
 # 5 Full yearly mortality files
 #   - 'nvss_cod_collapsed_YYYY.csv' -> summarize mortality counts by county and ACS-aligned age group.
 #   - 'nvss_cod_gp_YYYY.csv' -> broad cause-of-death classifications by county and age group.
@@ -50,7 +50,13 @@ library(readr)
 #   - 'nvss_cod_collapsed_all.csv' -> full dataset with mortality counts at the county-year level.
 #   - 'nvss_cod_gp_all.csv' -> county-year panel with broad cause-of-death classifications.
 #   - 'nvss_cod_all.csv' -> merged dataset of all raw processed mortality records at the county-year level.
+
+# 8 FIPS-adjusted mortality datasets
+#   - 'nvss_cod_collapsed_YYYY_sum_FipsAdj.csv' -> County-year mortality data with corrected FIPS codes.
+#   - 'nvss_cod_gp_YYYY_sum_FipsAdj.csv' -> Broad cause-of-death counts with valid FIPS only.
+#   - 'nvss_cod_all_sum_FipsAdj.csv' -> Final cleaned county-year mortality dataset with valid FIPS.
 # ------------------------------------------------------------------------------------------------------------ #
+
 
 
 # ------------------------------------------------------------------------ #
@@ -59,7 +65,7 @@ library(readr)
 # ------------------------------------------------------------------------ #
 
 # Set base directory
-base_dir <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
+base_dir <- ""
 
 # Loop over years 2000-2002
 for (year in 2000:2002) {
@@ -73,10 +79,10 @@ for (year in 2000:2002) {
                  fwf_positions(
                       start = c(21, 33, 67, 69, 142, 338,  
                                 341, 346, 351, 356, 361, 366, 371, 376, 381, 386, 
-                                391, 396, 401, 406, 411, 416, 421, 426, 431, 436),  # Updated Start positions
+                                391, 396, 401, 406, 411, 416, 421, 426, 431, 436),  
                       end   = c(22, 35, 68, 70, 145, 339,  
                                 345, 350, 355, 360, 365, 370, 375, 380, 385, 390, 
-                                395, 400, 405, 410, 415, 420, 425, 430, 435, 440),  # Updated End positions
+                                395, 400, 405, 410, 415, 420, 425, 430, 435, 440),  
                       col_names = c('state', 'fips', 'Age_Recode_52', 'Age_Recode_27', 
                                     'UNDERLYING_CAUSE_OF_DEATH', 'Number_Record_Axis_Conditions',
                                     'Condition_1RA', 'Condition_2RA', 'Condition_3RA', 'Condition_4RA', 'Condition_5RA', 
@@ -214,8 +220,7 @@ for (year in 2000:2002) {
 # Loop
 # ------------------------------------------------------------------------ #
 
-# Set base directory
-base_dir <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
+base_dir <- ""
 
 # Loop over years 2003 to 2022
 for (year in 2003:2022) {
@@ -317,8 +322,7 @@ for (year in 2003:2022) {
 # Regroup age categories to correspond with ACS age groups
 # ------------------------------------------------------------------------ #
 
-# Set base directory
-base_direct <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
+base_direct <- ""
 
 # Loop through years 2003-2022
 for (year in 2003:2022) {
@@ -437,12 +441,11 @@ for (year in 2000:2022) {
 }
 
 # ------------------------------------------------------------------------ #
-# 2003 - 2022
+# 2000 - 2022
 # Compare Total Deaths from Raw and Processed Datasets
 # ------------------------------------------------------------------------ #
 
-# Set base directory
-base_direct <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
+base_direct <- ""
 
 # Create an empty dataframe to store results
 death_comparison <- tibble(year = integer(), 
@@ -507,7 +510,7 @@ print(death_comparison)
 # Combine all files into panel structure with year column
 # ------------------------------------------------------------------------ #
 
-base_direct <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
+base_direct <- ""
 file_types <- c("nvss_cod_collapsed", "nvss_cod_gp", "nvss_cod")
 
 # Function to merge files by type with year column
@@ -543,7 +546,7 @@ walk(file_types, merge_files_by_type)
 # Collapse Age Groups to County-Year Level (_sum)
 # ------------------------------------------------------------------------ #
 
-base_direct <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
+base_direct <- ""
 
 # define file types
 file_types <- c("nvss_cod_collapsed", "nvss_cod_gp", "nvss_cod")
@@ -581,7 +584,7 @@ for (year in 2000:2022) {
 # ------------------------------------------------------------------------ #
 # Clean the unbalanced fips code 
 # Merge with a list of existing fips code file and drop the unmatched.
-# From 2003-2022 -- note that fips in 2000-02 do not align with other files
+# From 2000-2022 -- note that fips in 2000-02 do not align with other files
 # ------------------------------------------------------------------------ #
 
 library(dplyr)
@@ -589,8 +592,7 @@ library(tidyr)
 library(readr)
 library(stringr)
 
-# Set base directory
-base_direct <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
+base_direct <- ""
 
 # Define file types to process
 file_types <- c("nvss_cod_collapsed", "nvss_cod_gp", "nvss_cod")
@@ -663,9 +665,9 @@ walk(file_types, append_files_by_type)
 
 # Double check whether fips n looks correct
 
-base_direct <- "/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Data/NCHS mortality data/"
+base_direct <- ""
 
-# Load the appended file
+# Double check the total n of county
 file_path <- paste0(base_direct, "nvss_cod_collapsed_all_sum_FipsAdj.csv")
 
 # Read the data
