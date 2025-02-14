@@ -384,7 +384,7 @@ for (year in 2003:2022) {
 # Load Yearly Data & Assign Broader Cause Groups
 # ------------------------------------------------------------------------ #
 
-for (year in 2000:2002) {
+for (year in 2000:2022) {
   
   # Load the yearly ICD-10 grouped file
   file_path <- paste0(base_direct, "nvss_cod_collapsed_", year, ".csv")
