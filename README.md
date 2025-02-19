@@ -1,6 +1,6 @@
 # NCHS-Causes-of-Death-Data-Cleaning
 
-This repository contains working code & ideas using county-level causes of death records from the US National Vital Statistics System (NVSS), ACS, or census.
+This repository contains working code & ideas using county-level causes of death records from the (restricted) US National Vital Statistics System (NVSS), ACS, and/or census.
 Detailed descriptions are provided in the files.
 
 File Descriptions
