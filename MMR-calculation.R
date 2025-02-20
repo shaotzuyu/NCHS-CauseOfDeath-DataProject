@@ -229,10 +229,6 @@ for (year in 2003:2022) {
 # Plot 2010 by counties
 # ------------------------------------------------------------------------ #
 
-library(sf)
-library(tigris)
-library(RColorBrewer)
-
 base_direct <- ""
 file_path <- paste0(base_direct, "MMR_2010.csv")
 
@@ -240,7 +236,7 @@ file_path <- paste0(base_direct, "MMR_2010.csv")
 df <- read_csv(file_path, col_types = cols(fips = col_character()))
 
 # Get county shapefile and filter mainland (exclude AK, HI, and territories)
-counties <- counties(cb = TRUE, year = 2019, class = "sf") %>%
+counties <- counties(cb = TRUE, year = 2019, class = "sf", resolution = "20m") %>%
   filter(!STATEFP %in% c("02", "15", "60", "66", "69", "72", "78")) %>%
   rename(fips = GEOID)  # Rename GEOID to match MMR data
 
@@ -252,16 +248,90 @@ df <- df %>%
 counties <- counties %>%
   left_join(df, by = "fips")
 
-# Plot 
-ggplot(data = counties) +
-  geom_sf(aes(fill = MMR), color = "black", size = 0.1) +
-  scale_fill_viridis_c(option = "plasma", direction = -1, 
-                       limits = c(0.5, 1), breaks = c(0.5, 0.6, 0.7, 0.8, 0.9, 1),
+# Plot - 2010
+map2010 <- ggplot(data = counties) +
+  geom_sf(aes(fill = MMR), color = "gray30", size = 0.002) +
+  scale_fill_gradientn(colors = c("aliceblue", "lightblue", "magenta4"),
+                       limits = c(0.4, 1), 
+                       breaks = c(0.4,0.6, 0.8, 1),
+                       oob = scales::squish,
                        na.value = "gray90") +
-  labs(title = "Multiple Mortality Rate (MMR) by County - 2010",
-       fill = "MMR") +
+  labs(title = "Multiple Causes of Death Rate (MMR) by County - 2010",
+       fill = "MMR 2/more Causes per ID") +
   theme_void() +
-  theme(axis.text = element_blank(), axis.ticks = element_blank())
+  theme(axis.text = element_blank(), 
+        axis.ticks = element_blank(),
+        legend.position = "bottom")
+
+map2010_2 <- ggplot(data = counties) +
+  geom_sf(aes(fill = MMR_3plus), color = "gray30", size = 0.002) +
+  scale_fill_gradientn(colors = c("aliceblue", "red", "magenta4"),
+                       limits = c(0.4, 1), 
+                       breaks = c(0.4,0.6, 0.8, 1),
+                       oob = scales::squish,
+                       na.value = "gray90") +
+  labs(title = "Multiple Causes of Death  Rate (MMR) by County - 2010",
+       fill = "MMR 3/more Causes per ID ") +
+  theme_void() +
+  theme(axis.text = element_blank(), 
+        axis.ticks = element_blank(),
+        legend.position = "bottom")
+
+map2010 + map2010_2
+
+# ------------------------------------------------------------------------ #
+# Plot 2020 by counties
+# ------------------------------------------------------------------------ #
+
+base_direct <- ""
+file_path <- paste0(base_direct, "MMR_2020.csv")
+
+# Load 2020 MMR data
+df <- read_csv(file_path, col_types = cols(fips = col_character()))
+
+# Get county shapefile and filter mainland (exclude AK, HI, and territories)
+counties <- counties(cb = TRUE, year = 2019, class = "sf", resolution = "20m") %>%
+  filter(!STATEFP %in% c("02", "15", "60", "66", "69", "72", "78")) %>%
+  rename(fips = GEOID)  # Rename GEOID to match MMR data
+
+# Check if FIPS codes match correctly
+df <- df %>%
+  mutate(fips = str_pad(fips, width = 5, side = "left", pad = "0"))  # Ensure 5-digit FIPS
+
+# Merge MMR data with county shapefile
+counties <- counties %>%
+  left_join(df, by = "fips")
+
+# Plot - 2020
+map2020 <- ggplot(data = counties) +
+  geom_sf(aes(fill = MMR), color = "gray30", size = 0.002) +
+  scale_fill_gradientn(colors = c("aliceblue", "lightblue", "magenta4"),
+                       limits = c(0.4, 1), 
+                       breaks = c(0.4,0.6, 0.8, 1),
+                       oob = scales::squish,
+                       na.value = "gray90") +
+  labs(title = "Multiple Causes of Death Rate (MMR) by County - 2010",
+       fill = "MMR 2/more Causes per ID") +
+  theme_void() +
+  theme(axis.text = element_blank(), 
+        axis.ticks = element_blank(),
+        legend.position = "bottom")
+
+map2020_2 <- ggplot(data = counties) +
+  geom_sf(aes(fill = MMR_3plus), color = "gray30", size = 0.002) +
+  scale_fill_gradientn(colors = c("aliceblue", "red", "magenta4"),
+                       limits = c(0.4, 1), 
+                       breaks = c(0.4,0.6, 0.8, 1),
+                       oob = scales::squish,
+                       na.value = "gray90") +
+  labs(title = "Multiple Causes of Death  Rate (MMR) by County - 2010",
+       fill = "MMR 3/more Causes per ID ") +
+  theme_void() +
+  theme(axis.text = element_blank(), 
+        axis.ticks = element_blank(),
+        legend.position = "bottom")
+
+map2020 + map2020_2
 
 
 
