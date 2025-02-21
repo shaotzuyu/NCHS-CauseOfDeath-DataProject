@@ -207,7 +207,6 @@ for (year in 2003:2022) {
   
   # Save
   write.csv(county_age_summary, paste0(base_direct, "nvss_cod_broad_", year, ".csv"), row.names = FALSE)
-  cat("Saved:", paste0(base_direct, "nvss_cod_broad_", year, ".csv"), "\n")
 }
 
 
@@ -306,7 +305,6 @@ merge_files_by_type <- function(file_prefix) {
   merged_file_path <- paste0(base_direct, file_prefix, "_all.csv")
   write_csv(merged_data, merged_file_path)
   
-  cat("Merged & saved:", merged_file_path, "\n")
 }
 
 # Run merging for each file type
@@ -348,7 +346,6 @@ for (year in 2003:2022) {
       save_path <- paste0(base_direct, file_prefix, "_", year, "_sum.csv")
       write_csv(df_yearly, save_path)
       
-      cat("saved:", save_path, "\n")
     } 
   }
 }
@@ -399,7 +396,6 @@ for (year in 2003:2022) {
       
       # Save the cleaned file
       write.csv(df_cleaned, output_file, row.names = FALSE)
-      cat("Saved:", output_file, "\n")
       
     } 
   }
@@ -451,7 +447,6 @@ df <- read_csv(file_path, col_types = cols(.default = col_character()))
 num_unique_fips <- df %>%
   distinct(fips) %>%
   nrow()
-cat("Total unique FIPS codes in", file_path, ":", num_unique_fips, "\n")
 
 
 
