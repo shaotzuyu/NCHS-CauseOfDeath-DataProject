@@ -1,7 +1,7 @@
 #######################################################
 # Project: Pass Away from home project
 # Start date: 13 Feb, 2025
-# Update date: 13 Feb, 2025
+# Update date: 20 Feb, 2025
 #######################################################
 
 library(tidyverse)
@@ -14,10 +14,11 @@ library(readr)
 # Loop
 # ------------------------------------------------------------------------ #
 
+# export&import dif - for convenience
 base_dir <- ""
 save_dir <- ""
 
-# define path for all year
+# Define file path for all year
 for (year in 2003:2022) {
   
 year_folder <- paste0("MULT", year, ".USPSAllCnty")
@@ -99,10 +100,10 @@ df <- df %>%
 # make sure county fips codes are correctly formatted (3-digit added)
 df_clean <- df %>%
   mutate(
-    fips_oc = sprintf("%03d", as.numeric(fips_oc)),  
-    fips_res = sprintf("%03d", as.numeric(fips_res)),  
-    fips_oc_full = paste0(state_oc_fips, fips_oc),  
-    fips_res_full = paste0(state_res_fips, fips_res)  
+    fips_oc = sprintf("%03d", as.numeric(fips_oc)),  # Ensure 3-digit county FIPS
+    fips_res = sprintf("%03d", as.numeric(fips_res)),  # Ensure 3-digit county FIPS
+    fips_oc_full = paste0(state_oc_fips, fips_oc),  # Create full 5-digit FIPS code for occurrence
+    fips_res_full = paste0(state_res_fips, fips_res)  # Create full 5-digit FIPS code for residence
   ) %>%
   select(-fips_oc, -fips_res) 
 
@@ -124,15 +125,61 @@ df_clean <- df_clean %>%
   ) %>%
   mutate(year = year) %>% 
   relocate(state_oc_fips, state_res_fips, fips_oc_full, fips_res_full, 
-           year, sex, marital, total_conditions, underlying_cause, mismatch_fips, mismatch_state, .before = everything())
+           year, sex, marital, Age_Recode_52, total_conditions, underlying_cause, mismatch_fips, mismatch_state, .before = everything())
 
 # Save yearly file
-save_path <- paste0(save_dir, "nvss_cod_mismatch_", year, ".csv")
-write.csv(df_clean, save_path, row.names = FALSE)
-cat("Saved:", save_path, "\n")
+save_path_rdata <- paste0(save_dir, "nvss_cod_mismatch_", year, ".RData")
+save(df_clean, file = save_path_rdata)
+cat("Saved:", save_path_rdata, "\n")
 
 }
 
 
+# ------------------------------------------------------------------------ #
+# Clean the var, and create MMR variable
+# ------------------------------------------------------------------------ #
 
+# Loop through
+for (year in 2003:2022) {
+  
+  setwd("")
+  nvss_cod_mismatch <- readRDS("nvss_cod_mismatch_", year, ".rds")
+  
+  # Reordering for clarity
+  nvss_cod_mismatch <- nvss_cod_mismatch %>%
+    mutate(IDs = row_number()) %>%
+    relocate(IDs,state_oc_fips, state_res_fips, fips_oc_full, fips_res_full, 
+             year, sex, marital, Age_Recode_52, total_conditions, underlying_cause, 
+             mismatch_fips, mismatch_state, .before = everything())
+  
+  # define condition columns
+  condition_cols <- paste0("Condition_", 1:20, "RA")
+  
+  # extract the first letter (ICD-10 Chapter) from each condition var in a vector way
+  nvss_cod_mismatch[condition_cols] <- lapply(nvss_cod_mismatch[condition_cols], function(x) substr(x, 1, 1))
+  
+  # convert to long format with unique ID per death record
+  df_long <- nvss_cod_mismatch %>%
+    pivot_longer(cols = all_of(condition_cols), names_to = "Condition", values_to = "Chapter") %>%
+    filter(!is.na(Chapter) & Chapter != "")  # Remove missing causes to avoid wrong count
+  
+  # Count unique chapters per record using `IDs`
+  df_multiple <- df_long %>%
+    group_by(IDs) %>%  
+    summarise(unique_chapters = n_distinct(Chapter), .groups = "drop") %>%
+    mutate(
+      multiple_cause = as.integer(unique_chapters > 1),   # 2 or more unique
+      multiple_cause_3plus = as.integer(unique_chapters >= 3),  # 3 or more unique causes
+      multiple_cause_4plus = as.integer(unique_chapters >= 4)  # 3 or more unique
+    )
+  
+  # Merge back to the main dataset
+  nvss_cod_mismatch <- nvss_cod_mismatch %>%
+    left_join(df_multiple, by = "IDs")
+  
+  # Save the updated dataset
+  write.csv(nvss_cod_mismatch, "nvss_cod_mismatch_", year, ".csv", row.names = FALSE)
+  
+}
+  
 
