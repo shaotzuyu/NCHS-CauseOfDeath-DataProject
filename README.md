@@ -15,6 +15,7 @@ File Descriptions
 3. NVSS-CoD-network.R
   - Purpose: A working project using a network approach to analyze multiple underlying causes of death across counties.
   - Function: Constructs county-level networks based on shared cause-of-death patterns.
+  - Include an additional "NVSS-CoD-loop-broad.R" that leverages broader grouping categories for ICD-10 level 2 cause list.
 
 4. PAFM_Building.R
   - Purpose: A working project looking at mismatches between the place of death and residence in U.S. mortality data (2003–2022).
