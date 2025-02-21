@@ -19,3 +19,4 @@ File Descriptions
 4. PAFM_Building.R
   - Purpose: A working project looking at mismatches between the place of death and residence in U.S. mortality data (2003–2022).
   - Function: Constructs individual-level records identifying county- and state-level mismatches, and classifies causes of death.
+  - Includes a Stata file "PAFM-analysis.do" running preliminary logit models in 2010 and 2020.
