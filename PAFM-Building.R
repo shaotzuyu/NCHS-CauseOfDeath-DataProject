@@ -141,11 +141,12 @@ save(df_clean, file = save_path_rdata)
 # Loop through years
 for (year in 2003:2022) {
   
-  setwd("")
+  setwd("/Users/sy9715/Library/CloudStorage/OneDrive-PrincetonUniversity/Projects/PassAwayFromHome/Files/")
   
-  # Load the dataset using load() function
+  # Load the dataset and assign it correctly
   rds_file_path <- paste0("nvss_cod_mismatch_", year, ".RData")
-  load(rds_file_path) 
+  loaded_object <- load(rds_file_path) 
+  nvss_cod_mismatch <- get(loaded_object) 
   
   # Reordering for clarity
   nvss_cod_mismatch <- nvss_cod_mismatch %>%
@@ -170,9 +171,9 @@ for (year in 2003:2022) {
     group_by(IDs) %>%  
     summarise(unique_chapters = n_distinct(Chapter), .groups = "drop") %>%
     mutate(
-      multiple_cause = as.integer(unique_chapters > 1),   # 2 or more unique causes
-      multiple_cause_3plus = as.integer(unique_chapters >= 3),  # 3 or more unique causes
-      multiple_cause_4plus = as.integer(unique_chapters >= 4)  # 4 or more unique causes
+      multiple_cause = as.integer(unique_chapters > 1),   # 2 or more 
+      multiple_cause_3plus = as.integer(unique_chapters >= 3),  # 3 or more causes
+      multiple_cause_4plus = as.integer(unique_chapters >= 4)  # 4 or more
     )
   
   # Merge back to the main dataset
