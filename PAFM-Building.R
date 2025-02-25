@@ -1,7 +1,7 @@
 #######################################################
 # Project: Pass Away from home project
 # Start date: 13 Feb, 2025
-# Update date: 20 Feb, 2025
+# Update date: 24 Feb, 2025
 #######################################################
 
 library(tidyverse)
@@ -183,6 +183,8 @@ for (year in 2003:2022) {
   # Save the updated dataset
   csv_save_path <- paste0("nvss_cod_mismatch_", year, ".csv")
   write.csv(nvss_cod_mismatch, csv_save_path, row.names = FALSE)
-}
+            
+  }
+
 
 
