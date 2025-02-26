@@ -2,10 +2,9 @@
 *************************************************
 ** Project: PARM
 ** Start date: 20 Feb, 2025
-** Update date: 20 Feb, 2025
+** Update date: 25 Feb, 2025
 *************************************************
 *************************************************
-
 
 * ------------------------------------------- *
 * ETL pipeline for 2003:2022
@@ -105,7 +104,7 @@ forvalue i = 2003/2022 {
 * log-file for 2010 and 2020 logistic
 * ------------------------------------------- *
 
-log using "", replace
+log using "mismatch-20Feb2025.smcl", replace
 
 * ------------------------------------------- *
 * logistic regression 
@@ -144,27 +143,74 @@ forvalue i = 2010(10)2020 {
 log close
 
 
+* ------------------------------------------- *
+* logistic regression - agegroup margins est
+* County change
+* 2003 and 2020
+* ------------------------------------------- *
+
+cd ""
+
+forvalue i = 2003(1)2022 {
+	
+	use "nvss_cod_mismatch_`i'", clear
+	* Unique condition
+	logit mis_fips i.sex ib3.marital i.agegroup i.unique_chapters, or base robust
+	margins agegroup, post
+	parmest, saving(fips_agegroup_`i')
+
+	}
+	
+	
+* ------------------------------------------- *
+* logistic regression - agegroup margins est
+* State change
+* ------------------------------------------- *
 
 
+forvalue i = 2003(1)2022 {
+	
+	use "nvss_cod_mismatch_`i'", clear
+	* Unique condition
+	logit mis_state i.sex ib3.marital i.agegroup i.unique_chapters, or base robust
+	margins agegroup, post
+	parmest, saving(state_agegroup_`i')
+
+	}
 
 
+* ------------------------------------------- *
+* logistic regression - unique margins est
+* County change
+* 2003 and 2020
+* ------------------------------------------- *
+
+cd ""
+
+forvalue i = 2003(1)2022 {
+	
+	use "nvss_cod_mismatch_`i'", clear
+	* Unique condition
+	logit mis_fips i.sex ib3.marital i.agegroup i.unique_chapters, or base robust
+	margins unique_chapters, post
+	parmest, saving(fips_chapter_`i')
+
+}
+	
+	
+* ------------------------------------------- *
+* logistic regression - unique margins est
+* State change
+* ------------------------------------------- *
 
 
+forvalue i = 2003(1)2022 {
+	
+	use "nvss_cod_mismatch_`i'", clear
+	* Unique condition
+	logit mis_state i.sex ib3.marital i.agegroup i.unique_chapters, or base robust
+	margins unique_chapters, post
+	parmest, saving(state_chapter_`i')
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}
+log close
