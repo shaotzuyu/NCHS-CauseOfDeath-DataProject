@@ -77,10 +77,10 @@ for (year in 2000:2002) {
   # Read in Data
   df <- read_fwf(file_path,
                  fwf_positions(
-                      start = c(21, 33, 67, 69, 142, 338,  
+                      start = c(31, 33, 67, 69, 142, 338,  
                                 341, 346, 351, 356, 361, 366, 371, 376, 381, 386, 
                                 391, 396, 401, 406, 411, 416, 421, 426, 431, 436),  
-                      end   = c(22, 35, 68, 70, 145, 339,  
+                      end   = c(32, 35, 68, 70, 145, 339,  
                                 345, 350, 355, 360, 365, 370, 375, 380, 385, 390, 
                                 395, 400, 405, 410, 415, 420, 425, 430, 435, 440),  
                       col_names = c('state', 'fips', 'Age_Recode_52', 'Age_Recode_27', 
@@ -138,7 +138,6 @@ county_age_summary <- df %>%
 
 # Save file
 write.csv(county_age_summary, paste0(base_dir, "nvss_cod_", year, ".csv"), row.names = FALSE)
-cat("Saved:", paste0(base_dir, "nvss_cod_", year, ".csv"), "\n")
 
 }
 
